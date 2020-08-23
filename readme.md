@@ -1,9 +1,9 @@
 # Charger
-Charger is an command line application capable of polling an Airtable table of invoices and charging Stripe for each provided record. This application was built so that we could auto-charge customers who provided their card information to us without having to leave Airtable or charge them manually via Stripe.
+Charger is a command line application capable of polling an Airtable table of invoices and charging Stripe for each provided record. This application was built so that we could auto-charge customers who provided their card information to us without having to leave Airtable or charge them manually via Stripe.
 
 ### How To Use
 #### Application Setup
-Here are the required environment variables needed for this application.
+Here are some required environment variables needed for this application, the rest are in the next section.
 
 | | |
 | ------------- | ------------- |
@@ -26,3 +26,6 @@ Charger expects your table to have at least five separate columns. These columns
 
 #### Run
 Simply run the application with the above environment variables present and Charger will continue to monitor and charge invoices until exited or terminated.
+
+#### Deployment
+I've added a Dockerfile and a Github Workflow for using Github as a secrets repository and deploying the application on AWS's ECS platform. Good Luck!
