@@ -32,6 +32,7 @@ func main() {
 	paidColumn := os.Getenv("PAID_COLUMN")
 	notesColumn := os.Getenv("NOTES_COLUMN")
 	currencyCodeColumn := os.Getenv("CURRENCY_CODE_COLUMN")
+	dateColumn := os.Getenv("DATE_COLUMN")
 
 	airtableClient, err := airtable.NewAirtableClient(airtableAPIKey, baseID)
 	if err != nil {
@@ -49,6 +50,7 @@ func main() {
 					invoiceAmountColumn,
 					paidColumn,
 					currencyCodeColumn,
+					dateColumn,
 				},
 				FilterByFormula: fmt.Sprintf(`NOT({%s} = 'true')`, paidColumn),
 				PageSize:        100, // max records return allowed from airtable
@@ -61,7 +63,20 @@ func main() {
 
 			// using records fetch payment methods for customer ID
 			for _, record := range records.Records {
-				val, ok := record.Fields[stripeCustomerIDColumn]
+
+				// check to see if theres a date, bill only on or after said date
+				val, ok := record.Fields[dateColumn]
+				if ok {
+					date, err := time.Parse("2006-01-02", fmt.Sprintf("%v", val))
+					if err == nil {
+						// if we're not on or after date, skip this record
+						if !time.Now().After(date) {
+							continue
+						}
+					}
+				}
+
+				val, ok = record.Fields[stripeCustomerIDColumn]
 				if !ok {
 					continue
 				}

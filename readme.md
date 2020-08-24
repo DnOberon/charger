@@ -22,6 +22,7 @@ Charger expects your table to have at least five separate columns. These columns
 | CURRENCY_CODE_COLUMN | `string` - Three Digit Currency Code (currently only `usd` is accepted)| 
 | PAID_COLUMN | `string` - Either "true" or anything else. Indicates whether or not a record was paid |
 | NOTES_COLUMN | `string` - Will record a payment reference number on success, or error information on issues |
+| DATE_COLUMN | `string - Date` - Date on which the invoice should be charged |
 
 
 #### Run
