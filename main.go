@@ -99,10 +99,10 @@ func main() {
 					log.Printf("error updating airtable records %v", err)
 					return
 				}
-			}
 
-			// don't overload the Airtable API
-			time.Sleep(time.Second * 1)
+				// don't overload the Airtable API
+				time.Sleep(time.Second * 1)
+			}
 		}
 	}()
 

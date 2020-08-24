@@ -1,5 +1,5 @@
 # Charger
-Charger is a command line application capable of polling an Airtable table of invoices and charging Stripe for each provided record. This application was built so that we could auto-charge customers who provided their card information to us without having to leave Airtable or charge them manually via Stripe.
+Charger is an **experimental** command line application capable of polling an Airtable table of invoices and charging Stripe for each provided record. This application was built so that we could auto-charge customers who provided their card information to us without having to leave Airtable or charge them manually via Stripe.
 
 ### How To Use
 #### Application Setup
