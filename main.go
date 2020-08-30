@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"reflect"
+	"strings"
 	"syscall"
 	"time"
 
@@ -76,23 +78,44 @@ func main() {
 					}
 				}
 
+				// we need to handle rollup fields here, so run reflect and extract if slice
+				var customerID string
 				val, ok = record.Fields[stripeCustomerIDColumn]
 				if !ok {
+					log.Printf("customerID not present, skipping")
 					continue
 				}
 
-				customerID := fmt.Sprintf("%s", val)
+				// we're still making some assumptions here - like it's a slice of strings and not ints
+				rt := reflect.TypeOf(val)
+				switch rt.Kind() {
+				case reflect.Slice:
+					c := val.([]interface{})
+					if len(c) > 0 {
+						customerID = fmt.Sprintf("%v", c[0])
+					}
+				case reflect.Array:
+					c := val.([]interface{})
+					if len(c) > 0 {
+						customerID = fmt.Sprintf("%v", c[0])
+					}
+				case reflect.String:
+					customerID = fmt.Sprintf("%s", val)
+				}
 
 				val, ok = record.Fields[currencyCodeColumn]
 				if !ok {
+					log.Printf("currency code not present, skipping")
 					continue
 				}
 
 				currencyCode := fmt.Sprintf("%s", val)
+				currencyCode = strings.ToLower(currencyCode)
 
 				// invoiceAmount must be a float64
 				invoiceAmount, ok := record.Fields[invoiceAmountColumn]
 				if !ok {
+					log.Printf("invoice amount not present, skipping")
 					continue
 				}
 
