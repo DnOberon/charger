@@ -147,6 +147,7 @@ func main() {
 				// don't overload the Airtable API
 				time.Sleep(time.Second * 1)
 			}
+			time.Sleep(time.Second * 1)
 		}
 	}()
 
