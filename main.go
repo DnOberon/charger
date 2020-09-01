@@ -130,10 +130,10 @@ func main() {
 				// set paid and notes column for patch update
 				confirmationNumber, err := charge(customerID, currencyCode, invoiceAmount.(float64))
 				if err != nil {
-					fields[notesColumn] = err.Error()
+					fields[notesColumn] = fmt.Sprintf("Error charging customer through Stripe: %v", err.Error())
 				} else {
-					fields[notesColumn] = confirmationNumber
-					fields["paid"] = "true"
+					fields[notesColumn] = fmt.Sprintf("Stripe Confirmation Number: %s", confirmationNumber)
+					fields[paidColumn] = "true"
 				}
 
 				// update only the notes and paid columns
