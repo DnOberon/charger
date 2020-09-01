@@ -65,6 +65,9 @@ func main() {
 
 			// using records fetch payment methods for customer ID
 			for _, record := range records.Records {
+				// if any of the required fields are absent, we skip the record. The assumption is that someone is
+				// still entering information for that record and we should hold off charging until we have all the
+				// information
 
 				// check to see if theres a date, bill only on or after said date
 				val, ok := record.Fields[dateColumn]
@@ -76,6 +79,9 @@ func main() {
 							continue
 						}
 					}
+				} else if !ok {
+					log.Printf("date not present, skipping")
+					continue
 				}
 
 				// we need to handle rollup fields here, so run reflect and extract if slice
