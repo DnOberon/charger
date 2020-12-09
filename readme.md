@@ -11,6 +11,9 @@ Here are some required environment variables needed for this application, the re
 | AIRTABLE_API_KEY |  Airtable developer API key |
 | AIRTABLE_BASE_ID |  Airtable Base ID |
 | TABLE_NAME | Airtable invoice table name |
+| POLL_INTERVAL | Time in seconds between each poll of Airtable invoice records|
+| TIMEZONE | IANA Time Zone database notation |
+|STALE_DAYS| How many days until a record is considered stale, provide as negative number - e.g -7 denotes that all records with a paydate 7 days in the past will not be charged
 
 #### Table Setup
 Charger expects your table to have at least five separate columns. These columns should be created beforehand and are provided to the application through environment variables. These are the environment variables.
@@ -19,7 +22,7 @@ Charger expects your table to have at least five separate columns. These columns
 | ------------- | ------------- |
 | STRIPE_CUSTOMER_ID_COLUMN | `string` - Stripe Customer ID for the invoiced person or organization |
 | INVOICE_AMOUNT_COLUMN | `float` - Invoice Amount | 
-| CURRENCY_CODE_COLUMN | `string` - Three Digit Currency Code (currently only `usd` is accepted)| 
+| CURRENCY_CODE_COLUMN | `string` - Three Digit Currency Code| 
 | PAID_COLUMN | `string` - Either "true" or anything else. Indicates whether or not a record was paid |
 | NOTES_COLUMN | `string` - Will record a payment reference number on success, or error information on issues |
 | DATE_COLUMN | `string` -  Date on which the invoice should be charged |

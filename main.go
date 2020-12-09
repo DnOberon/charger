@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"reflect"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -20,6 +21,9 @@ import (
 )
 
 func main() {
+	var staleDays int
+	var pollInterval int
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -35,6 +39,16 @@ func main() {
 	notesColumn := os.Getenv("NOTES_COLUMN")
 	currencyCodeColumn := os.Getenv("CURRENCY_CODE_COLUMN")
 	dateColumn := os.Getenv("DATE_COLUMN")
+
+	staleDays, err = strconv.Atoi(os.Getenv("STALE_DAYS"))
+	if err != nil {
+		staleDays = -7
+	}
+
+	pollInterval, err = strconv.Atoi(os.Getenv("POLL_INTERVAL"))
+	if err != nil {
+		pollInterval = 60
+	}
 
 	airtableClient, err := airtable.NewAirtableClient(airtableAPIKey, baseID)
 	if err != nil {
@@ -70,15 +84,30 @@ func main() {
 				// information
 
 				// check to see if theres a date, bill only on or after said date
+				loc, err := time.LoadLocation(os.Getenv("TIMEZONE"))
+				if err != nil {
+					log.Fatal("incorrect time location!")
+					return
+				}
+
 				val, ok := record.Fields[dateColumn]
 				if ok {
-					date, err := time.Parse("2006-01-02", fmt.Sprintf("%v", val))
+					date, err := time.ParseInLocation("2006-01-02", fmt.Sprintf("%v", val), loc)
 					if err == nil {
 						// if we're not on or after date, skip this record
-						if !time.Now().After(date) {
+						if !time.Now().In(loc).After(date) {
+							log.Printf("date in future, skipping")
+							continue
+						}
+
+						past := time.Now().In(loc).AddDate(0, 0, staleDays)
+
+						if date.Before(past) {
+							log.Printf("pay date too old, skipping")
 							continue
 						}
 					}
+
 				} else if !ok {
 					log.Printf("date not present, skipping")
 					continue
@@ -147,7 +176,7 @@ func main() {
 				// don't overload the Airtable API
 				time.Sleep(time.Second * 1)
 			}
-			time.Sleep(time.Second * 1)
+			time.Sleep(time.Duration(pollInterval) * time.Second)
 		}
 	}()
 
